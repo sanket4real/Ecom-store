@@ -5,14 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/formatters";
 import { useState } from "react";
-import { addProduct } from "../../_actions/products";
+import { addProduct, updateProduct } from "../../_actions/products";
 import { useFormState, useFormStatus } from "react-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@prisma/client";
 import Image from "next/image";
 
 export function ProductForm({ product }: { product?: Product | null }) {
-	const [error, action] = useFormState(addProduct, {});
+	console.log(product);
+	const [error, action] = useFormState(
+		product == null ? addProduct : updateProduct.bind(null, product.id),
+		{}
+	);
 	const [priceInCents, setPriceInCents] = useState<number | undefined>(
 		product?.priceInCents
 	);
@@ -74,7 +78,7 @@ export function ProductForm({ product }: { product?: Product | null }) {
 				<Input type="file" id="image" name="image" required={product == null} />
 				{product != null && (
 					<Image
-						src={product.imagePath}
+						src={`/${product.imagePath}`}
 						alt="Product Image"
 						width="200"
 						height="200"
